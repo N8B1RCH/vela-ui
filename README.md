@@ -37,7 +37,8 @@ swiftdependencies: [
 Or in Xcode: File → Add Package Dependencies → paste the repo URL.
 
 ✦ Quick Start
-swiftimport Vela
+```swift
+import Vela
 
 struct ContentView: View {
     var body: some View {
@@ -57,6 +58,7 @@ struct ContentView: View {
         .padding(VelaSpacing.lg)
     }
 }
+```
 
 ✦ Preview App
 The Preview/VelaPreview target is a standalone SwiftUI app that showcases every component in both light and dark mode, with controls to simulate accessibility settings like Dynamic Type and Reduce Motion.
