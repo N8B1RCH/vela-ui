@@ -1,6 +1,7 @@
 # Vela ✦
 
-> A SwiftUI design system built for clarity, motion, and accessibility.
+> Vela is Latin for "sails" — a name chosen to evoke interfaces that feel lightweight, fluid, and effortless, like wind catching canvas on open water.
+> This SwiftUI design system is built for clarity, motion, and accessibility.
 
 ![Swift](https://img.shields.io/badge/Swift-5.9+-F05138?style=flat&logo=swift&logoColor=white)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-5.0+-0071e3?style=flat&logo=apple&logoColor=white)
