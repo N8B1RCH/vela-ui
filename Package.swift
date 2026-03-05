@@ -17,10 +17,11 @@ let package = Package(
     targets: [
         .target(
             name: "Vela",
-            path: "Sources/Vela"
+            path: "Sources/Vela-UI",
+            resources: [.process("Resources")]
         ),
         .testTarget(
-            name: "VelaTests",
+            name: "Tests",
             dependencies: ["Vela"],
             path: "Tests/VelaTests"
         ),
