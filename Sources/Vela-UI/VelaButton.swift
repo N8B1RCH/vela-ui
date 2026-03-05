@@ -22,22 +22,22 @@ public enum VelaButtonSize {
     case medium
     case large
 
-    var horizontalPadding: CGFloat {
+    var height: CGFloat {
         switch self {
-        case .small: return VelaSpacing.sm
-        case .medium: return VelaSpacing.md
-        case .large: return VelaSpacing.xl
+        case .small: return 32
+        case .medium: return 44
+        case .large: return 52
         }
     }
-
-    var verticalPadding: CGFloat {
+    
+    var radius: CGFloat {
         switch self {
-        case .small: return VelaSpacing.xs
-        case .medium: return VelaSpacing.sm
-        case .large: return VelaSpacing.md
+        case .small: return VelaRadius.sm
+        case .medium: return VelaRadius.lg
+        case .large: return VelaRadius.pill
         }
     }
-
+    
     var font: Font {
         switch self {
         case .small: return VelaFont.caption
@@ -45,14 +45,14 @@ public enum VelaButtonSize {
         case .large: return VelaFont.headline
         }
     }
+}
 
-    var radius: CGFloat {
-        switch self {
-        case .small: return VelaRadius.sm
-        case .medium: return VelaRadius.md
-        case .large: return VelaRadius.lg
-        }
-    }
+// MARK: - Button Icon Placement
+
+public enum VelaButtonIconPlacement {
+    case left
+    case right
+    case trailingOverlay
 }
 
 // MARK: - VelaButton
@@ -75,16 +75,19 @@ public struct VelaButton: View {
 
     private let label: String
     private let icon: String?
+    private let iconPlacement: VelaButtonIconPlacement?
     private let style: VelaButtonStyle
     private let size: VelaButtonSize
     private let isLoading: Bool
     private let action: () -> Void
 
     @State private var isPressed = false
+    @State private var animateTrailingIcon = false
 
     public init(
         _ label: String,
         icon: String? = nil,
+        iconPlacement: VelaButtonIconPlacement? = nil,
         style: VelaButtonStyle = .primary,
         size: VelaButtonSize = .medium,
         isLoading: Bool = false,
@@ -106,22 +109,28 @@ public struct VelaButton: View {
                         .tint(foregroundColor)
                         .scaleEffect(0.85)
                 } else {
-                    if let icon {
+                    if let icon, iconPlacement == .left {
                         Image(systemName: icon)
                             .font(size.font)
                     }
+                    
                     Text(label)
                         .font(size.font)
                         .fontWeight(.semibold)
+                    
+                    if let icon, iconPlacement == .right {
+                        Image(systemName: icon)
+                            .font(size.font)
+                    }
                 }
             }
-            .padding(.horizontal, size.horizontalPadding)
-            .padding(.vertical, size.verticalPadding)
+            .frame(height: style.height)
             .frame(maxWidth: style == .primary ? .infinity : nil)
             .foregroundStyle(foregroundColor)
             .background(backgroundView)
             .clipShape(RoundedRectangle(cornerRadius: size.radius, style: .continuous))
             .overlay(borderOverlay)
+            .overlay(trailingIcon, alignment: .trailing)
             .opacity(isEnabled ? 1 : 0.4)
             .scaleEffect(isPressed && !reduceMotion ? 0.97 : 1.0)
             .animation(reduceMotion ? .none : VelaAnimation.snappy, value: isPressed)
@@ -130,6 +139,10 @@ public struct VelaButton: View {
         .accessibilityLabel(label)
         .accessibilityAddTraits(.isButton)
         .accessibilityHint(isLoading ? "Loading, please wait" : "")
+        .onAppear {
+            guard !reduceMotion else { return }
+            animateTrailingIcon = true
+        }
     }
 
     // MARK: - Private
@@ -162,9 +175,20 @@ public struct VelaButton: View {
 
     @ViewBuilder
     private var borderOverlay: some View {
+        switch style
         if style == .secondary {
             RoundedRectangle(cornerRadius: size.radius, style: .continuous)
                 .strokeBorder(VelaColor.accent, lineWidth: 1.5)
+        }
+    }
+    
+    @ViewBuilder
+    private var trailingIcon: some View {
+        if let icon, iconPlacement == .trailingOverlay {
+            Image(systemName: icon)
+                .font(size.font)
+                .offset(x: animateTrailingIcon ? -20 : -10)
+                .animation(.easeInOut, value: animateTrailingIcon)
         }
     }
 }
