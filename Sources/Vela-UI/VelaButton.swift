@@ -12,16 +12,7 @@ public enum VelaButtonStyle {
     case ghost
     /// Filled with the error color. Use for destructive actions.
     case destructive
-}
-
-// MARK: - Button Size
-
-/// The size of a `VelaButton`.
-public enum VelaButtonSize {
-    case small
-    case medium
-    case large
-
+    
     var height: CGFloat {
         switch self {
         case .small: return 32
@@ -43,6 +34,47 @@ public enum VelaButtonSize {
         case .small: return VelaFont.caption
         case .medium: return VelaFont.subheadline
         case .large: return VelaFont.headline
+        }
+    }
+    
+    private var foregroundColor: Color {
+        switch self {
+        case .primary: return .white
+        case .secondary: return VelaColor.accent
+        case .ghost: return VelaColor.accent
+        case .destructive: return .white
+        }
+    }
+    
+    @ViewBuilder
+    private var backgroundView: some View {
+        switch self {
+        case .primary:
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .fill(VelaColor.accent)
+        case .secondary:
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .fill(VelaColor.accentSubtle)
+        case .ghost:
+            Color.clear
+        case .destructive:
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .fill(VelaColor.error)
+        }
+    }
+
+    @ViewBuilder
+    private var borderOverlay: some View {
+        switch self {
+        case .primary:
+            Color.clear
+        case .secondary:
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .strokeBorder(VelaColor.accent, lineWidth: 1.5)
+        case .ghost:
+            Color.clear
+        case .destructive:
+            Color.clear
         }
     }
 }
@@ -77,7 +109,6 @@ public struct VelaButton: View {
     private let icon: String?
     private let iconPlacement: VelaButtonIconPlacement?
     private let style: VelaButtonStyle
-    private let size: VelaButtonSize
     private let isLoading: Bool
     private let action: () -> Void
 
@@ -89,14 +120,12 @@ public struct VelaButton: View {
         icon: String? = nil,
         iconPlacement: VelaButtonIconPlacement? = nil,
         style: VelaButtonStyle = .primary,
-        size: VelaButtonSize = .medium,
         isLoading: Bool = false,
         action: @escaping () -> Void
     ) {
         self.label = label
         self.icon = icon
         self.style = style
-        self.size = size
         self.isLoading = isLoading
         self.action = action
     }
@@ -111,25 +140,25 @@ public struct VelaButton: View {
                 } else {
                     if let icon, iconPlacement == .left {
                         Image(systemName: icon)
-                            .font(size.font)
+                            .font(style.font)
                     }
                     
                     Text(label)
-                        .font(size.font)
+                        .font(style.font)
                         .fontWeight(.semibold)
                     
                     if let icon, iconPlacement == .right {
                         Image(systemName: icon)
-                            .font(size.font)
+                            .font(style.font)
                     }
                 }
             }
             .frame(height: style.height)
             .frame(maxWidth: style == .primary ? .infinity : nil)
-            .foregroundStyle(foregroundColor)
-            .background(backgroundView)
-            .clipShape(RoundedRectangle(cornerRadius: size.radius, style: .continuous))
-            .overlay(borderOverlay)
+            .foregroundStyle(style.foregroundColor)
+            .background(style.backgroundView)
+            .clipShape(RoundedRectangle(cornerRadius: style.radius, style: .continuous))
+            .overlay(style.borderOverlay)
             .overlay(trailingIcon, alignment: .trailing)
             .opacity(isEnabled ? 1 : 0.4)
             .scaleEffect(isPressed && !reduceMotion ? 0.97 : 1.0)
@@ -146,41 +175,6 @@ public struct VelaButton: View {
     }
 
     // MARK: - Private
-
-    private var foregroundColor: Color {
-        switch style {
-        case .primary: return .white
-        case .secondary: return VelaColor.accent
-        case .ghost: return VelaColor.accent
-        case .destructive: return .white
-        }
-    }
-
-    @ViewBuilder
-    private var backgroundView: some View {
-        switch style {
-        case .primary:
-            RoundedRectangle(cornerRadius: size.radius, style: .continuous)
-                .fill(VelaColor.accent)
-        case .secondary:
-            RoundedRectangle(cornerRadius: size.radius, style: .continuous)
-                .fill(VelaColor.accentSubtle)
-        case .ghost:
-            Color.clear
-        case .destructive:
-            RoundedRectangle(cornerRadius: size.radius, style: .continuous)
-                .fill(VelaColor.error)
-        }
-    }
-
-    @ViewBuilder
-    private var borderOverlay: some View {
-        if style == .secondary {
-            RoundedRectangle(cornerRadius: size.radius, style: .continuous)
-                .strokeBorder(VelaColor.accent, lineWidth: 1.5)
-        }
-    }
-    
     @ViewBuilder
     private var trailingIcon: some View {
         if let icon, iconPlacement == .trailingOverlay {
