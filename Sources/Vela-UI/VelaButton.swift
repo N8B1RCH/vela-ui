@@ -175,7 +175,6 @@ public struct VelaButton: View {
 
     @ViewBuilder
     private var borderOverlay: some View {
-        switch style
         if style == .secondary {
             RoundedRectangle(cornerRadius: size.radius, style: .continuous)
                 .strokeBorder(VelaColor.accent, lineWidth: 1.5)
