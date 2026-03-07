@@ -175,10 +175,12 @@ public struct VelaButton: View {
 
     @ViewBuilder
     private var backgroundShape: some View {
+        switch style {
         case .standard, .destructive:
             makeShape().fill(themeColor)
         case .ghost:
             makeShape().fill(Color.clear)
+        }
     }
 
     @ViewBuilder
