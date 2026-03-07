@@ -175,25 +175,21 @@ public struct VelaButton: View {
 
     @ViewBuilder
     private var backgroundShape: some View {
-        switch style {
         case .standard, .destructive:
-            typeShape.fill(themeColor)
+            makeShape().fill(themeColor)
         case .ghost:
-            typeShape.fill(Color.clear)
-        }
+            makeShape().fill(Color.clear)
     }
 
     @ViewBuilder
     private var borderOverlay: some View {
         if style == .ghost {
-            typeShapeStroke
+            makeInsettableShape().strokeBorder(themeColor, lineWidth: 2)
                 .strokeBorder(themeColor, lineWidth: 2)
         }
     }
 
-    // Returns the correct shape for the button type (for fill)
-    @ViewBuilder
-    private var typeShape: some Shape {
+    private func makeShape() -> some Shape {
         switch type {
         case .fill:
             AnyShape(Capsule(style: .continuous))
@@ -202,9 +198,7 @@ public struct VelaButton: View {
         }
     }
 
-    // Returns the correct shape for strokeBorder (requires InsettableShape)
-    @ViewBuilder
-    private var typeShapeStroke: some InsettableShape {
+    private func makeInsettableShape() -> some InsettableShape {
         switch type {
         case .fill:
             AnyInsettableShape(Capsule(style: .continuous))
